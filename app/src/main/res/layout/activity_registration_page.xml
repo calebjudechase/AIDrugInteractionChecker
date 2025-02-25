@@ -26,6 +26,7 @@
         android:layout_marginTop="25dp"
         android:ems="10"
         android:hint="@string/email"
+        android:autofillHints="emailAddress"
         android:inputType="textEmailAddress"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
@@ -38,10 +39,24 @@
         android:layout_marginTop="25dp"
         android:ems="10"
         android:hint="@string/password"
+        android:autofillHints="password"
         android:inputType="textPassword"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toBottomOf="@+id/registerEmail" />
+
+    <EditText
+        android:id="@+id/registerRetypePassword"
+        android:layout_width="357dp"
+        android:layout_height="49dp"
+        android:layout_marginTop="25dp"
+        android:ems="10"
+        android:hint="@string/retype_password"
+        android:inputType="textPassword"
+        android:autofillHints="password"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/registerPassword" />
 
     <Button
         android:id="@+id/registerBtn"
@@ -51,7 +66,7 @@
         android:text="@string/register"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/registerPassword" />
+        app:layout_constraintTop_toBottomOf="@+id/registerRetypePassword" />
 
     <TextView
         android:id="@+id/textGoToLogin"

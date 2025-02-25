@@ -12,4 +12,5 @@
     <string name="have_an_account_click_here_to_login">Have an Account? Click here to Login!</string>
     <string name="login">Login</string>
     <string name="don_t_have_an_account_click_here_to_register">Don\'t have an Account? Click here to Register!</string>
+    <string name="retype_password">Retype Password</string>
 </resources>
