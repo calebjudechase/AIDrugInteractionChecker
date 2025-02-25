@@ -1,0 +1,29 @@
+{
+  "project_info": {
+    "project_number": "123361741874",
+    "project_id": "ai-drug-interaction-checker",
+    "storage_bucket": "ai-drug-interaction-checker.firebasestorage.app"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:123361741874:android:0b67683187faf7577f802b",
+        "android_client_info": {
+          "package_name": "com.example.aidruginteractionchecker"
+        }
+      },
+      "oauth_client": [],
+      "api_key": [
+        {
+          "current_key": "AIzaSyBXIqz8Z34MJC6iJt6On4P7xoGFEHylg_s"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": []
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}
