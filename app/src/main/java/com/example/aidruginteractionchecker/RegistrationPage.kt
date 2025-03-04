@@ -41,8 +41,9 @@ class RegistrationPage : AppCompatActivity() {
                     if (password.length >= 6){ //if password is at least 6 characters long
                         firebaseAuth.createUserWithEmailAndPassword(email, password).addOnCompleteListener{ //makes account
                             if (it.isSuccessful) { //if successful
+                                firebaseAuth.currentUser?.sendEmailVerification() //sends email verification
                                 progressBar.visibility = View.INVISIBLE //progress bar invisible
-                                Toast.makeText(this, "Account successfully created, go to login page and sign in!", Toast.LENGTH_LONG).show() //gives message that account made
+                                Toast.makeText(this, "Account successfully created! A verification link has been sent to your email!", Toast.LENGTH_LONG).show() //gives message that account made
                             }else { //if unsuccessful
                                 progressBar.visibility = View.INVISIBLE //progress bar invisible
                                 Toast.makeText(this, it.exception.toString(), Toast.LENGTH_SHORT).show() //gives error

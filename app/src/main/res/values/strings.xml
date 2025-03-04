@@ -13,4 +13,21 @@
     <string name="login">Login</string>
     <string name="don_t_have_an_account_click_here_to_register">Don\'t have an Account? Click here to Register!</string>
     <string name="retype_password">Retype Password</string>
+    <string name="logout">Logout</string>
+    <string name="save">Save</string>
+    <string name="age">Age:</string>
+    <string name="enter_age_here">Enter Age Here</string>
+    <string name="biological_sex">Biological Sex:</string>
+    <string name="prescribed_medication">Prescribed Medication:</string>
+    <string name="enter_drug_name_here">Enter Drug Name Here</string>
+    <string name="add">Add</string>
+    <string name="pre_existing_conditions">Pre-Existing Conditions:</string>
+    <string name="enter_condition_name_here">Enter Condition Name Here</string>
+
+    <string name="selected_item">Selected item:</string>
+    <string-array name="choose_sex">
+        <item>Male</item>
+        <item>Female</item>
+    </string-array>
+
 </resources>

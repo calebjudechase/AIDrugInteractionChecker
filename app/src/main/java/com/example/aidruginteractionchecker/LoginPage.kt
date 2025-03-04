@@ -19,16 +19,9 @@ class LoginPage : AppCompatActivity() {
 
     lateinit var firebaseAuth: FirebaseAuth
 
-    @SuppressLint("MissingInflatedId")
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_login_page)
-
-/*        val btnLogin = findViewById<Button>(R.id.loginBtn) //temporary code to send to main on click
-        btnLogin.setOnClickListener{
-            val mainPageSkip = Intent(this, MainActivity::class.java)
-            startActivity(mainPageSkip)
-        }*/
 
         firebaseAuth = FirebaseAuth.getInstance()
         val progressBar = findViewById<ProgressBar>(R.id.progressBarLogin) //sets progress bar to variable
@@ -40,15 +33,20 @@ class LoginPage : AppCompatActivity() {
 
             if (email.isNotEmpty() && password.isNotEmpty()) { //if all fields are filled
                 firebaseAuth.signInWithEmailAndPassword(email, password).addOnCompleteListener { //logs into account
-                        if (it.isSuccessful) { //if successful
-                            progressBar.visibility = View.INVISIBLE
+                    if (it.isSuccessful) { //if successful
+                        progressBar.visibility = View.INVISIBLE
+                        if (firebaseAuth.currentUser?.isEmailVerified == true) {
                             val mainPageSkip = Intent(this, MainActivity::class.java)
                             startActivity(mainPageSkip) //goes to main page
-                        } else { //if unsuccessful
-                            Toast.makeText(this, it.exception.toString(), Toast.LENGTH_SHORT).show() //gives error
-                            progressBar.visibility = View.INVISIBLE
                         }
+                        else{
+                            Toast.makeText(this, "Please verify email!", Toast.LENGTH_SHORT).show() //gives error
+                        }
+                    } else { //if unsuccessful
+                        Toast.makeText(this, it.exception.toString(), Toast.LENGTH_SHORT).show() //gives error
+                        progressBar.visibility = View.INVISIBLE
                     }
+                }
             }
             else {
                 progressBar.visibility = View.INVISIBLE
@@ -56,17 +54,11 @@ class LoginPage : AppCompatActivity() {
             }
         }
 
-
-
-
-
         //Go to Registration Page Functionality
         val goToRegister = findViewById<TextView>(R.id.textGoToRegister)
         goToRegister.setOnClickListener{
             val sendToRegister = Intent(this, RegistrationPage::class.java)
             startActivity(sendToRegister)
         }
-
-
     }
 }
