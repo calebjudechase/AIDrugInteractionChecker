@@ -8,8 +8,12 @@ import android.view.View
 import android.view.ViewGroup
 import android.widget.ArrayAdapter
 import android.widget.Button
+import android.widget.EditText
 import android.widget.Spinner
 import android.widget.TextView
+import androidx.recyclerview.widget.LinearLayoutManager
+import androidx.recyclerview.widget.RecyclerView
+import androidx.recyclerview.widget.RecyclerView.Recycler
 import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.auth.auth
 
@@ -43,6 +47,7 @@ class profileFragment : Fragment() {
     ): View? {
         // Inflate the layout for this fragment
         return inflater.inflate(R.layout.fragment_profile, container, false)
+
     }
 
     companion object {
@@ -68,23 +73,60 @@ class profileFragment : Fragment() {
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) { //third event
 
-        lateinit var firebaseAuth: FirebaseAuth
+        lateinit var firebaseAuth: FirebaseAuth //initializes firebase authentication
 
         super.onViewCreated(view, savedInstanceState)
+
         //Logout Button Functionality
-        val logoutBtn = view.findViewById<Button>(R.id.logoutBtn)
-        logoutBtn.setOnClickListener{
-            firebaseAuth.signOut()
-            val sendToLogin = Intent(requireContext(), LoginPage::class.java)
+        val logoutBtn = view.findViewById<Button>(R.id.logoutBtn) //initializes logout button
+        logoutBtn.setOnClickListener{ //when clicked
+            firebaseAuth.signOut() //logs out
+            val sendToLogin = Intent(requireContext(), LoginPage::class.java) //sends to login page
             startActivity(sendToLogin)
         }
 
-        val chooseSex = resources.getStringArray(R.array.choose_sex)
-        val sexSpinner = view.findViewById<Spinner>(R.id.sexSpinner)
-        ArrayAdapter.createFromResource(requireContext(), R.array.choose_sex,android.R.layout.simple_spinner_item).also{
+        //spinner functionality
+        val sexSpinner = view.findViewById<Spinner>(R.id.sexSpinner) //initializes spinner
+        ArrayAdapter.createFromResource(requireContext(), R.array.choose_sex,android.R.layout.simple_spinner_item).also{ //adapts string array
          adapter ->
             adapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item)
             sexSpinner.adapter = adapter
+        }
+
+        //drug recycler functionality
+        val drugList = mutableListOf<String>("item1", "item2", "item3", "item4")
+        val drugRecycler = view.findViewById<RecyclerView>(R.id.drugRecycler)
+        var drugAdapter = RecyclerItemAdapter(drugList)
+        drugRecycler.layoutManager = LinearLayoutManager(context)
+        drugRecycler.adapter = drugAdapter
+
+        //condition recycler functionality
+        val conditionList = mutableListOf<String>("item11", "item12", "item13")
+        val conditionRecycler = view.findViewById<RecyclerView>(R.id.conditionRecycler)
+        var conditionAdapter = RecyclerItemAdapter(conditionList)
+        conditionRecycler.layoutManager = LinearLayoutManager(context)
+        conditionRecycler.adapter = conditionAdapter
+
+        //drug add functionality
+        val addDrugBtn = view.findViewById<Button>(R.id.addDrug) //initializes add drug button
+        val drugEntry = view.findViewById<EditText>(R.id.drugEntry)
+        addDrugBtn.setOnClickListener{ //when clicked
+            if ((drugEntry.text.toString() != "") && !drugList.contains(drugEntry.text.toString())) {
+                drugList.add(0, drugEntry.text.toString())
+                drugAdapter = RecyclerItemAdapter(drugList)
+                drugRecycler.adapter = drugAdapter
+            }
+        }
+
+        //condition add functionality
+        val addConditionBtn = view.findViewById<Button>(R.id.addCondition) //initializes add condition button
+        val conditionEntry = view.findViewById<EditText>(R.id.conditionEntry)
+        addConditionBtn.setOnClickListener{ //when clicked
+            if ((conditionEntry.text.toString() != "") && !conditionList.contains(conditionEntry.text.toString())){
+                conditionList.add(0, conditionEntry.text.toString())
+                conditionAdapter = RecyclerItemAdapter(conditionList)
+                conditionRecycler.adapter = conditionAdapter
+            }
         }
 
     }

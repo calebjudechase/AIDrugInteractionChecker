@@ -3,7 +3,6 @@
     <string name="profile">Profile</string>
     <string name="interaction_checker">Interaction Checker</string>
     <string name="help">Help</string>
-    <!-- TODO: Remove or change this placeholder text -->
     <string name="hello_blank_fragment">Hello blank fragment</string>
     <string name="ai_drug_interaction_checker">AI Drug Interaction Checker</string>
     <string name="email">Email</string>
@@ -25,6 +24,8 @@
     <string name="enter_condition_name_here">Enter Condition Name Here</string>
 
     <string name="selected_item">Selected item:</string>
+    <string name="delete">delete</string>
+    <string name="sample_text">sample text</string>
     <string-array name="choose_sex">
         <item>Male</item>
         <item>Female</item>

@@ -103,6 +103,7 @@
                     android:text="@string/add" />
 
                 <androidx.recyclerview.widget.RecyclerView
+                    android:id="@+id/drugRecycler"
                     android:layout_width="match_parent"
                     android:layout_height="match_parent" />
 
@@ -131,6 +132,7 @@
                     android:text="@string/add" />
 
                 <androidx.recyclerview.widget.RecyclerView
+                    android:id="@+id/conditionRecycler"
                     android:layout_width="match_parent"
                     android:layout_height="match_parent" />
 
