@@ -23,11 +23,11 @@ class RegistrationPage : AppCompatActivity() {
 
         firebaseAuth = FirebaseAuth.getInstance()
         var db = Firebase.firestore
-        var template = hashMapOf(
-            "Age" to null,
-            "Sex" to null,
-            "Meds" to null,
-            "Conditions" to null
+        var template = hashMapOf( //makes template hashmap in order to have init vals
+            "Age" to "",
+            "Sex" to "",
+            "Meds" to "",
+            "Conditions" to ""
         )
         // Register Button Functionality
         val progressBar = findViewById<ProgressBar>(R.id.progressBar) //sets progress bar to variable
