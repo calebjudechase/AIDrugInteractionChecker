@@ -1,10 +1,7 @@
 package com.example.aidruginteractionchecker
 
 import android.os.Bundle
-import androidx.activity.enableEdgeToEdge
 import androidx.appcompat.app.AppCompatActivity
-import androidx.core.view.ViewCompat
-import androidx.core.view.WindowInsetsCompat
 import androidx.fragment.app.Fragment
 import com.google.android.material.bottomnavigation.BottomNavigationView
 
@@ -20,7 +17,7 @@ class MainActivity : AppCompatActivity() {
         bottomNavView.setOnItemSelectedListener { menuItem -> //logic for switching fragments when menu used
             when(menuItem.itemId){
                 R.id.bottomProfile -> { //if profile clicked goes to profile
-                    switchFragment(profileFragment())
+                    switchFragment(ProfileFragment())
                     true
                 }
                 R.id.bottomInteractionChecker -> { //if interaction checker clicked goes to interaction checker
@@ -35,7 +32,7 @@ class MainActivity : AppCompatActivity() {
             }
         }
 
-        switchFragment(profileFragment()) //starts at profile fragment
+        switchFragment(ProfileFragment()) //starts at profile fragment
     }
 
     private fun switchFragment(fragment : Fragment) { //this function changes the current fragment

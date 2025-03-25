@@ -8,11 +8,10 @@ import android.widget.EditText
 import android.widget.ProgressBar
 import android.widget.TextView
 import android.widget.Toast
-import androidx.activity.enableEdgeToEdge
 import androidx.appcompat.app.AppCompatActivity
-import androidx.core.view.ViewCompat
-import androidx.core.view.WindowInsetsCompat
+import com.google.firebase.Firebase
 import com.google.firebase.auth.FirebaseAuth
+import com.google.firebase.firestore.firestore
 
 class RegistrationPage : AppCompatActivity() {
 
@@ -23,7 +22,13 @@ class RegistrationPage : AppCompatActivity() {
         setContentView(R.layout.activity_registration_page)
 
         firebaseAuth = FirebaseAuth.getInstance()
-
+        var db = Firebase.firestore
+        var template = hashMapOf(
+            "Age" to null,
+            "Sex" to null,
+            "Meds" to null,
+            "Conditions" to null
+        )
         // Register Button Functionality
         val progressBar = findViewById<ProgressBar>(R.id.progressBar) //sets progress bar to variable
         val btnRegister = findViewById<Button>(R.id.registerBtn) //sets register button to variable
@@ -43,6 +48,9 @@ class RegistrationPage : AppCompatActivity() {
                             if (it.isSuccessful) { //if successful
                                 firebaseAuth.currentUser?.sendEmailVerification() //sends email verification
                                 progressBar.visibility = View.INVISIBLE //progress bar invisible
+
+                                db.collection("users").document(firebaseAuth.uid.toString()).set(template)
+
                                 Toast.makeText(this, "Account successfully created! A verification link has been sent to your email!", Toast.LENGTH_LONG).show() //gives message that account made
                             }else { //if unsuccessful
                                 progressBar.visibility = View.INVISIBLE //progress bar invisible

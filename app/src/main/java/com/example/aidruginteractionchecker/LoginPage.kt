@@ -1,6 +1,6 @@
 package com.example.aidruginteractionchecker
 
-import android.annotation.SuppressLint
+
 import android.content.Intent
 import android.os.Bundle
 import android.view.View
@@ -9,10 +9,7 @@ import android.widget.EditText
 import android.widget.ProgressBar
 import android.widget.TextView
 import android.widget.Toast
-import androidx.activity.enableEdgeToEdge
 import androidx.appcompat.app.AppCompatActivity
-import androidx.core.view.ViewCompat
-import androidx.core.view.WindowInsetsCompat
 import com.google.firebase.auth.FirebaseAuth
 
 class LoginPage : AppCompatActivity() {
@@ -24,6 +21,13 @@ class LoginPage : AppCompatActivity() {
         setContentView(R.layout.activity_login_page)
 
         firebaseAuth = FirebaseAuth.getInstance()
+        if(firebaseAuth.currentUser != null && firebaseAuth.currentUser?.isEmailVerified == true ){ //if user already logged in
+            val mainPageSkip = Intent(this, MainActivity::class.java)
+            startActivity(mainPageSkip) //goes to main page
+        } else {
+            firebaseAuth.signOut()
+        }
+
         val progressBar = findViewById<ProgressBar>(R.id.progressBarLogin) //sets progress bar to variable
         val btnLogin = findViewById<Button>(R.id.loginBtn)
         btnLogin.setOnClickListener{ //when login button clicked
