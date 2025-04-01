@@ -26,6 +26,17 @@
     <string name="selected_item">Selected item:</string>
     <string name="delete">delete</string>
     <string name="sample_text">sample text</string>
+    <string name="help2">Help</string>
+    <string name="interaction_checker2">Interaction Checker</string>
+    <string name="enter_comparison_drug_here">Enter Comparison Drug Here</string>
+    <string name="comparison_drug">Comparison Drug:</string>
+    <string name="barcode_scanner">barcode scanner</string>
+    <string name="compare">Compare</string>
+    <string name="comparison_results">Comparison Results:</string>
+    <string name="comparison_results_recycler">Comparison Results Recycler</string>
+    <string name="comparison_results2">Comparison Results</string>
+    <string name="health_factor">Health Factor:</string>
+    <string name="risk_level">Risk Level:</string>
     <string-array name="choose_sex">
         <item>Male</item>
         <item>Female</item>

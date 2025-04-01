@@ -21,11 +21,11 @@ class MainActivity : AppCompatActivity() {
                     true
                 }
                 R.id.bottomInteractionChecker -> { //if interaction checker clicked goes to interaction checker
-                    switchFragment(interactionCheckerFragment())
+                    switchFragment(InteractionCheckerFragment())
                     true
                 }
                 R.id.bottomHelp -> { //if help clicked goes to help
-                    switchFragment(helpFragment())
+                    switchFragment(HelpFragment())
                     true
                 }
                 else -> false //if nothing clicked does nothing
