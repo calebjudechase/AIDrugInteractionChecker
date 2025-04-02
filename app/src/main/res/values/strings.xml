@@ -42,6 +42,21 @@
     <string name="send_recovery_email">Send Recovery Email</string>
     <string name="back">Back</string>
     <string name="account_successfully_created_a_verification_link_has_been_sent_to_your_email">Account successfully created! A verification link has been sent to your email!</string>
+    <string name="interaction_results">Interaction Results:</string>
+    <string name="submit">Submit</string>
+    <string name="how_to_use_the_app">How to Use the App:</string>
+    <string name="to_use_the_app_fill_out_all_information_on_the_profile_page_and_click_save_next_navigate_to_the_interaction_checker_page_where_you_should_see_your_health_factors_already_populated_enter_in_the_comparison_drug_you_would_like_to_check_the_interaction_severity_against_either_by_using_the_text_entry_or_through_scanning_it_s_barcode_by_clicking_the_barcode_scanner_button_to_the_right_of_the_text_entry">To use the app fill out all information on the profile page and click save. Next navigate to the Interaction Checker page where you should see your health factors already populated. Enter in the comparison drug you would like to check the interaction severity against either by using the text entry or through scanning it\'s barcode by clicking the barcode scanner button to the right of the text entry.</string>
+    <string name="questions_and_answers">Questions and Answers:</string>
+    <string name="question">Question:</string>
+    <string name="is_my_medical_information_stored_securely">Is my medical information stored securely?</string>
+    <string name="answer">Answer:</string>
+    <string name="your_medical_information_is_encrypted_within_our_database_and_cannot_be_accessed_by_any_account_other_than_your_to_ensure_your_medical_information_remains_private">Your medical information is encrypted within our database and cannot be accessed by any account other than your to ensure your medical information remains private.</string>
+    <string name="how_does_your_app_perform_drug_interaction_risk_analysis">How does your app perform drug interaction risk analysis?</string>
+    <string name="our_app_uses_a_machine_learning_model_trained_on_drug_interaction_data_in_order_to_predict_the_risk_level_of_a_drug_interaction_to_a_high_degree_of_certainty">Our app uses a machine learning model trained on drug interaction data in order to predict the risk level of a drug interaction to a high degree of certainty.</string>
+    <string name="how_accurate_is_your_risk_analysis">How accurate is your risk analysis?</string>
+    <string name="our_machine_learning_model_has_an_accuracy_greater_than_75_of_course_always_make_sure_to_consult_a_doctor_before_taking_a_new_potentially_harmful_medication">Our machine learning model has an accuracy greater than 75%. Of course always make sure to consult a doctor before taking a new potentially harmful medication.</string>
+    <string name="for_any_other_questions_or_issues_reach_out_to_us_at">For any other questions or issues reach out to us at:</string>
+    <string name="aidruginteractionchecker_gmail_com">aidruginteractionchecker@gmail.com</string>
     <string-array name="choose_sex">
         <item>Male</item>
         <item>Female</item>

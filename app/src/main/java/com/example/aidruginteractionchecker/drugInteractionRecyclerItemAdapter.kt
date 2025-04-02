@@ -2,9 +2,9 @@ package com.example.aidruginteractionchecker
 import android.annotation.SuppressLint
 import android.view.LayoutInflater
 import android.view.ViewGroup
-import android.widget.ImageButton
 import android.widget.TextView
 import androidx.cardview.widget.CardView
+import androidx.core.content.ContextCompat
 import androidx.recyclerview.widget.RecyclerView
 
 class DrugInteractionRecyclerItemAdapter(factorList: MutableList<String>, severityList: MutableList<String>) : RecyclerView.Adapter<DrugInteractionRecyclerItemAdapter.ItemViewHolder>() { //initiates recycler adapter class
@@ -30,10 +30,26 @@ class DrugInteractionRecyclerItemAdapter(factorList: MutableList<String>, severi
 
         private val factorText = rootView.findViewById<TextView>(R.id.interactionRecyclerText) //creates var for easy access to recyclerText
         private val severityText = rootView.findViewById<TextView>(R.id.severityText)
+        private val interactionCardView = rootView.findViewById<CardView>(R.id.interactionCardView)
 
-        fun bind(factor: String, severity: String) { //creates bind function which sets itemText to the string in list
-            factorText.text = factor
-            severityText.text = severity
+        fun bind(factor: String, severity: String) { //creates bind function
+            factorText.text = factor //sets the factor text to the factor
+            severityText.text = severity //sets the severity to the severity
+
+            //sets colors based on severity level
+            if (severity == "Low") {
+                interactionCardView.setCardBackgroundColor(ContextCompat.getColor(interactionCardView.context, R.color.green))
+                factorText.setTextColor(ContextCompat.getColor(interactionCardView.context, R.color.black))
+                severityText.setTextColor(ContextCompat.getColor(interactionCardView.context, R.color.black))
+            } else if (severity == "Moderate") {
+                interactionCardView.setCardBackgroundColor(ContextCompat.getColor(interactionCardView.context, R.color.orange))
+                factorText.setTextColor(ContextCompat.getColor(interactionCardView.context, R.color.black))
+                severityText.setTextColor(ContextCompat.getColor(interactionCardView.context, R.color.black))
+            } else if (severity == "Severe"){
+                interactionCardView.setCardBackgroundColor(ContextCompat.getColor(interactionCardView.context, R.color.red))
+                factorText.setTextColor(ContextCompat.getColor(interactionCardView.context, R.color.black))
+                severityText.setTextColor(ContextCompat.getColor(interactionCardView.context, R.color.black))
+            }
         }
     }
 
