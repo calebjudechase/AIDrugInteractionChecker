@@ -64,5 +64,12 @@ class LoginPage : AppCompatActivity() {
             val sendToRegister = Intent(this, RegistrationPage::class.java)
             startActivity(sendToRegister)
         }
+
+        //Go to Password Recovery Page Functionality
+        val goToRecover = findViewById<TextView>(R.id.recoveryText)
+        goToRecover.setOnClickListener{
+            val sendToRecover = Intent(this, ForgotPassword::class.java)
+            startActivity(sendToRecover)
+        }
     }
 }

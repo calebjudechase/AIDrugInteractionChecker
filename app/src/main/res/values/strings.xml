@@ -37,6 +37,11 @@
     <string name="comparison_results2">Comparison Results</string>
     <string name="health_factor">Health Factor:</string>
     <string name="risk_level">Risk Level:</string>
+    <string name="forgot_password">Forgot Password?</string>
+    <string name="password_recovery">Password Recovery</string>
+    <string name="send_recovery_email">Send Recovery Email</string>
+    <string name="back">Back</string>
+    <string name="account_successfully_created_a_verification_link_has_been_sent_to_your_email">Account successfully created! A verification link has been sent to your email!</string>
     <string-array name="choose_sex">
         <item>Male</item>
         <item>Female</item>

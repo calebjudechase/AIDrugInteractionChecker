@@ -51,7 +51,9 @@ class RegistrationPage : AppCompatActivity() {
 
                                 db.collection("users").document(firebaseAuth.uid.toString()).set(template)
 
-                                Toast.makeText(this, "Account successfully created! A verification link has been sent to your email!", Toast.LENGTH_LONG).show() //gives message that account made
+                                val registrationSuccessText = findViewById<TextView>(R.id.accountSuccess)
+                                registrationSuccessText.visibility = View.VISIBLE
+                                //Toast.makeText(this, "Account successfully created! A verification link has been sent to your email!", Toast.LENGTH_LONG).show() //gives message that account made
                             }else { //if unsuccessful
                                 progressBar.visibility = View.INVISIBLE //progress bar invisible
                                 Toast.makeText(this, it.exception.toString(), Toast.LENGTH_SHORT).show() //gives error
