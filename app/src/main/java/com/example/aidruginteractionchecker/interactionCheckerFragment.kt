@@ -1,6 +1,5 @@
 package com.example.aidruginteractionchecker
 
-import android.content.Intent
 import android.os.Bundle
 import androidx.fragment.app.Fragment
 import android.view.LayoutInflater
@@ -79,10 +78,7 @@ class InteractionCheckerFragment : Fragment() {
         compareBtn.setOnClickListener { //when compare clicked
             if (comparisonEntry.text.toString().isNotEmpty() && factorList.isNotEmpty() && factorList.contains(comparisonEntry.text.toString()) != true) {
                 for (i in 0 until factorList.size) { //for size of factor list
-                    var riskVal = Random.nextInt(
-                        0,
-                        3
-                    ) //simulating output of MLM with random number gen of 0, 1, or 2
+                    var riskVal = Random.nextInt(0, 3) //simulating output of MLM with random number gen of 0, 1, or 2
                     if (riskVal == 0) { //if val is 0 severity is low
                         severityList[i] = "Low"
                     } else if (riskVal == 1) { //if val is 1 severity is moderate
@@ -103,8 +99,9 @@ class InteractionCheckerFragment : Fragment() {
 
         val barcodeBtn = view.findViewById<ImageButton>(R.id.barcodeBtn) //barcode button variable
         barcodeBtn.setOnClickListener { //when barcode button clicked
-            val sendToBarcodeScanner = Intent(requireContext(), BarcodeScannerPage::class.java)
-            startActivity(sendToBarcodeScanner)
+            BarcodeScannerPage.goToScanner(requireContext()) {
+
+            }
         }
     }
 }

@@ -17,6 +17,7 @@
             android:layout_marginTop="50dp"
             android:fontFamily="@font/archivo_black"
             android:text="@string/interaction_checker2"
+            android:textAlignment="center"
             android:textSize="34sp"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintStart_toStartOf="parent"

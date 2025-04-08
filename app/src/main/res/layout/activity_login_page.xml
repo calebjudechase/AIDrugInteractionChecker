@@ -13,6 +13,7 @@
         android:layout_height="wrap_content"
         android:fontFamily="@font/archivo_black"
         android:text="@string/ai_drug_interaction_checker"
+        android:textAlignment="center"
         android:textSize="24sp"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"

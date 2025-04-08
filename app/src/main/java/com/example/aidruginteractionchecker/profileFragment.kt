@@ -103,7 +103,7 @@ class ProfileFragment : Fragment() {
         val drugEntry = view.findViewById<EditText>(R.id.drugEntry)
         addDrugBtn.setOnClickListener{ //when clicked
             if ((drugEntry.text.toString() != "") && !drugList.contains(drugEntry.text.toString())) { //if text not empty or already in list
-                drugList.add(0, drugEntry.text.toString()) //adds drug to list at beginning
+                drugList.add(0, drugEntry.text.toString().replace("~", "")) //adds drug to list at beginning
                 drugAdapter.resetItems(drugList) //resets adapter
             }
         }
@@ -113,7 +113,7 @@ class ProfileFragment : Fragment() {
         val conditionEntry = view.findViewById<EditText>(R.id.conditionEntry)
         addConditionBtn.setOnClickListener{ //when clicked
             if ((conditionEntry.text.toString() != "") && !conditionList.contains(conditionEntry.text.toString())){ //if text not empty or already in list
-                conditionList.add(0, conditionEntry.text.toString()) //adds drug to list at beginning
+                conditionList.add(0, conditionEntry.text.toString().replace("~", "")) //adds drug to list at beginning
                 conditionAdapter.resetItems(conditionList) //resets adapter
             }
         }
