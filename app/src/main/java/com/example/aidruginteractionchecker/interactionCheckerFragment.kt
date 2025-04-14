@@ -99,8 +99,17 @@ class InteractionCheckerFragment : Fragment() {
 
         val barcodeBtn = view.findViewById<ImageButton>(R.id.barcodeBtn) //barcode button variable
         barcodeBtn.setOnClickListener { //when barcode button clicked
-            BarcodeScannerPage.goToScanner(requireContext()) {
+            BarcodeScannerPage.goToScanner(requireContext()) { barcodes -> //runs go to scanner process returning barcodes
+                barcodes.forEach { barcode -> //for 1, since theres only ever one barcode
+                    db.collection("drugs").document("labels").get().addOnSuccessListener { documentSnapshot -> //gets drug labels
+                        if (documentSnapshot.getString(barcode.rawValue.toString()) != null) { //if drug label exists
+                            comparisonEntry.setText(documentSnapshot.getString(barcode.rawValue.toString())) //enters drug name
+                        } else { //if not
+                            Toast.makeText(requireContext(), "Drug not in Database!", Toast.LENGTH_SHORT).show() //tells em
+                        }
+                    }
 
+                }
             }
         }
     }
