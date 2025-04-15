@@ -11,7 +11,7 @@ class MainActivity : AppCompatActivity() {
 
     private lateinit var bottomNavView: BottomNavigationView //initializes the bottom navigation view
 
-    protected override fun onNewIntent(intent: Intent) {
+    override fun onNewIntent(intent: Intent) {
         super.onNewIntent(intent)
         setIntent(intent)
     }

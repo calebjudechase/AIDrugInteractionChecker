@@ -70,7 +70,7 @@ class BarcodeScannerPage : AppCompatActivity() {
 
     private fun cameraPreviewBind() {
         cameraPreview = Preview.Builder().build() //initializes the preview
-        cameraPreview.setSurfaceProvider(previewView.getSurfaceProvider()) //sets the preview
+        cameraPreview.surfaceProvider = previewView.getSurfaceProvider() //sets the preview
         cameraProviderProcess.bindToLifecycle(this, cameraSelect, cameraPreview) //binds preview to lifecycle
     }
 

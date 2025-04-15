@@ -26,7 +26,7 @@ class DrugInteractionRecyclerItemAdapter(factorList: MutableList<String>, severi
         holder.bind(factor, severity)
     }
 
-    inner class ItemViewHolder(private val rootView: CardView) : RecyclerView.ViewHolder(rootView) { //initiates inner view holder class
+    inner class ItemViewHolder(rootView: CardView) : RecyclerView.ViewHolder(rootView) { //initiates inner view holder class
 
         private val factorText = rootView.findViewById<TextView>(R.id.interactionRecyclerText) //creates var for easy access to recyclerText
         private val severityText = rootView.findViewById<TextView>(R.id.severityText)
