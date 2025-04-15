@@ -66,4 +66,7 @@ dependencies {
     implementation("org.jetbrains.kotlinx:kotlinx-coroutines-guava:1.7.3")
 
     implementation("com.google.mlkit:barcode-scanning:17.3.0")
+
+    implementation("com.google.firebase:firebase-ml-modeldownloader")
+    implementation("org.tensorflow:tensorflow-lite:2.3.0")
 }

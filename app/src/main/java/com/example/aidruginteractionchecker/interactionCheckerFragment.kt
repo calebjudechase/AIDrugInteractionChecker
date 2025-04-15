@@ -14,6 +14,9 @@ import androidx.recyclerview.widget.RecyclerView
 import com.google.firebase.Firebase
 import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.firestore.firestore
+import com.google.firebase.ml.modeldownloader.CustomModelDownloadConditions
+import com.google.firebase.ml.modeldownloader.DownloadType
+import com.google.firebase.ml.modeldownloader.FirebaseModelDownloader
 import kotlin.random.Random
 
 class InteractionCheckerFragment : Fragment() {
@@ -31,6 +34,16 @@ class InteractionCheckerFragment : Fragment() {
     }
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) { //third event
+
+        val modelDownloader = FirebaseModelDownloader.getInstance()
+        val conditions = CustomModelDownloadConditions.Builder().requireWifi().build()
+        modelDownloader.getModel(
+            "Drug_Interaction_Model",
+            DownloadType.LOCAL_MODEL_UPDATE_IN_BACKGROUND,
+            conditions
+        ).addOnSuccessListener {
+            Toast.makeText(requireContext(), "ML Model Successfully Downloaded!", Toast.LENGTH_SHORT).show()
+        }
 
         var interactionAdapter : DrugInteractionRecyclerItemAdapter
         var factorList = mutableListOf<String>()
@@ -76,24 +89,41 @@ class InteractionCheckerFragment : Fragment() {
         val comparisonEntry = view.findViewById<EditText>(R.id.comparisonEntry)
         val compareBtn = view.findViewById<Button>(R.id.compareBtn) //compare button variable
         compareBtn.setOnClickListener { //when compare clicked
-            if (comparisonEntry.text.toString().isNotEmpty() && factorList.isNotEmpty() && factorList.contains(comparisonEntry.text.toString()) != true) {
-                for (i in 0 until factorList.size) { //for size of factor list
-                    var riskVal = Random.nextInt(0, 3) //simulating output of MLM with random number gen of 0, 1, or 2
-                    if (riskVal == 0) { //if val is 0 severity is low
-                        severityList[i] = "Low"
-                    } else if (riskVal == 1) { //if val is 1 severity is moderate
-                        severityList[i] = "Moderate"
-                    } else { //otherwise val is 2 and severity is severe
-                        severityList[i] = "Severe"
+            if(comparisonEntry.text.toString() == "StressTest") { //if stress test
+                val dbStressTest = db.collection("stresstest").document("letters") //assigns doc to variable
+                var storedVal = ":)" //creates initial stored val
+                for (i in 0 until Random.nextInt(100, 200)) { //for a number of times between 100 and 199
+                    var readWriteType = Random.nextInt(0, 2) //picks read or write at random
+                    var fieldNumber = Random.nextInt(1, 27).toString() //picks random spot to read/write from
+                    var saveString = Random.nextInt(1, 27).toString() //picks random number string
+                    if (readWriteType == 0) { //if read
+                        dbStressTest.get().addOnSuccessListener { documentSnapshot -> //gets doc snapshot
+                            storedVal = documentSnapshot.getString(fieldNumber).toString() //reads from spot to storedVal
+                        }
+                    } else { //else if write
+                        dbStressTest.update(fieldNumber, saveString) //updates random spot to the stored val
                     }
                 }
-                interactionAdapter.resetItems(factorList, severityList)//reset adapter
-            } else if (comparisonEntry.text.toString().isNotEmpty() != true){
-                Toast.makeText(requireContext(), "Enter comparison drug!", Toast.LENGTH_SHORT).show()//gives error
-            } else if (factorList.isNotEmpty() != true) {
-                Toast.makeText(requireContext(), "Fill out and save health profile!", Toast.LENGTH_SHORT).show()//gives error
             } else {
-                Toast.makeText(requireContext(), "You are already taking comparison drug!", Toast.LENGTH_SHORT).show()//gives error
+                if (comparisonEntry.text.toString().isNotEmpty() && factorList.isNotEmpty() && factorList.contains(comparisonEntry.text.toString()) != true) {
+                    for (i in 0 until factorList.size) { //for size of factor list
+                        var riskVal = Random.nextInt(0, 3) //simulating output of MLM with random number gen of 0, 1, or 2
+                        if (riskVal == 0) { //if val is 0 severity is low
+                            severityList[i] = "Low"
+                        } else if (riskVal == 1) { //if val is 1 severity is moderate
+                            severityList[i] = "Moderate"
+                        } else { //otherwise val is 2 and severity is severe
+                            severityList[i] = "Severe"
+                        }
+                    }
+                    interactionAdapter.resetItems(factorList, severityList)//reset adapter
+                } else if (comparisonEntry.text.toString().isNotEmpty() != true){
+                    Toast.makeText(requireContext(), "Enter comparison drug!", Toast.LENGTH_SHORT).show()//gives error
+                } else if (factorList.isNotEmpty() != true) {
+                    Toast.makeText(requireContext(), "Fill out and save health profile!", Toast.LENGTH_SHORT).show()//gives error
+                } else {
+                    Toast.makeText(requireContext(), "You are already taking comparison drug!", Toast.LENGTH_SHORT).show()//gives error
+                }
             }
         }
 
