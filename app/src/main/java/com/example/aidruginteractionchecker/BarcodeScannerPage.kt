@@ -23,7 +23,6 @@ import com.google.mlkit.vision.barcode.BarcodeScannerOptions
 import com.google.mlkit.vision.barcode.BarcodeScanning
 import com.google.mlkit.vision.barcode.common.Barcode
 import com.google.mlkit.vision.common.InputImage
-import java.util.concurrent.Executors
 
 class BarcodeScannerPage : AppCompatActivity() {
 
@@ -56,8 +55,7 @@ class BarcodeScannerPage : AppCompatActivity() {
         cameraFutureProvider = ProcessCameraProvider.getInstance(this) //gets instance
         cameraFutureProvider.addListener({ //adds listener
             cameraProviderProcess = cameraFutureProvider.get() //gets the future provider for teh process
-            cameraPreviewBind() //runs binding function
-            bindAnalysis() //runs analysis function
+            bindProviderProcess() //binds preview and analysis to lifecycle
         }, ContextCompat.getMainExecutor(this))
 
         val backBtn = findViewById<Button>(R.id.backBtn)
@@ -68,22 +66,27 @@ class BarcodeScannerPage : AppCompatActivity() {
         }
     }
 
-    private fun cameraPreviewBind() {
+    private fun bindProviderProcess() { //binds preview and analysis to lifecycle of cameraProviderProcess
+        val scanner: BarcodeScanner = BarcodeScanning.getClient(BarcodeScannerOptions.Builder().setBarcodeFormats(Barcode.FORMAT_UPC_A).build()) //initializes barcode scanner var
+        val camExecution = ContextCompat.getMainExecutor(this) //Executors.newSingleThreadExecutor() //initializes camera execution var
+
         cameraPreview = Preview.Builder().build() //initializes the preview
         cameraPreview.surfaceProvider = previewView.getSurfaceProvider() //sets the preview
-        cameraProviderProcess.bindToLifecycle(this, cameraSelect, cameraPreview) //binds preview to lifecycle
-    }
 
-    private fun bindAnalysis() {
-        val scanner: BarcodeScanner = BarcodeScanning.getClient(BarcodeScannerOptions.Builder().setBarcodeFormats(Barcode.FORMAT_UPC_A).build()) //initializes barcode scanner var
-        val camExecution = Executors.newSingleThreadExecutor() //initializes camera execution var
-        if (previewView.display != null) { //if the previewView display is not null (in order to prevent null pointer error)
+       if (previewView.display != null) { //if the previewView display is not null (in order to prevent null pointer error)
             analyzeImage = ImageAnalysis.Builder().setTargetRotation(previewView.display.rotation).build() //sets analyze image
             analyzeImage.setAnalyzer(camExecution){imageProxy -> //sets analyzer
                 imageProxyProcessor(scanner, imageProxy) //runs image proxy process function
             }
-            cameraProviderProcess.bindToLifecycle(this, cameraSelect, analyzeImage) //binds to lifecycle
-        }
+        } else {
+           previewView.post {
+               bindProviderProcess() // retry once the view is attached
+           }
+           return
+       }
+
+        cameraProviderProcess.unbindAll()
+        cameraProviderProcess.bindToLifecycle(this, cameraSelect, cameraPreview, analyzeImage) //binds analysis to lifecycle
     }
 
     @OptIn(ExperimentalGetImage::class)
@@ -105,6 +108,7 @@ class BarcodeScannerPage : AppCompatActivity() {
     companion object {
         private var onScan: ((barcodes: List<Barcode>) -> Unit)? = null //sets on scan to null
         fun goToScanner(context: Context, onScan: (barcodes: List<Barcode>)-> Unit) { //takes previous context and returns barcodes
+            this.onScan = null
             this.onScan = onScan //sets the function onScan to variable onScan
             Intent(context, BarcodeScannerPage::class.java).also { //sets up intent to go to this activity
                 context.startActivity(it) //does it
