@@ -1,6 +1,7 @@
 package com.example.aidruginteractionchecker
 
 import android.os.Bundle
+import android.util.Log
 import androidx.fragment.app.Fragment
 import android.view.LayoutInflater
 import android.view.View
@@ -67,7 +68,7 @@ class InteractionCheckerFragment : Fragment() {
             "acth" to listOf("adrenocorticotropic", "hormone"),
             "acug" to listOf("arthrocutaneouveal", "granulomatosis"),
             "acvd" to listOf("atherosclerotic", "cardiovascular", "disease"),
-            "ad" to listOf("alzheimer's", "disease", "attachment", "disorder"),
+            "ad" to listOf("alzheimers", "disease", "attachment", "disorder"),
             "add" to listOf("attention", "deficit", "disorder"),
             "add-rt" to listOf("attention", "deficit", "disorder", "residual", "type"),
             "adem" to listOf("acute", "disseminated", "encephalomyelitis"),
@@ -118,7 +119,7 @@ class InteractionCheckerFragment : Fragment() {
             "beh" to listOf("behaviorally", "emotionally", "handicapped"),
             "bh" to listOf("behaviorally", "handicapped"),
             "bl" to listOf("burkitt", "lymphoma"),
-            "bmd" to listOf("becker's", "muscular", "dystrophy"),
+            "bmd" to listOf("beckers", "muscular", "dystrophy"),
             "bpad" to listOf("bipolar", "affective", "disorder"),
             "bpd" to listOf("borderline", "personality", "disorder"),
             "bph" to listOf("benign", "prostatic", "hyperplasia"),
@@ -518,7 +519,26 @@ class InteractionCheckerFragment : Fragment() {
             "zss" to listOf("zellweger", "syndrome", "spectrum"),
             "zttk" to listOf("zhu", "tokita", "takenouchi", "kim")
             ) //medical abbreviation key
-        var word2vecKey : MutableMap<String, Int>
+
+        //creates the word2vec key from the index file provided to me
+        var word2vecKey = mutableMapOf<String, Int>()
+        context?.assets?.open("vocabulary_with_index.txt")?.bufferedReader()?.useLines { lines ->
+            lines.forEach { line ->
+                val parts = line.trim().split(Regex("\\s+")) // split on tabs or spaces
+                if (parts.size == 2) {
+                    val word = parts[0]
+                    val index = parts[1].toIntOrNull()
+                    if (index != null) {
+                        word2vecKey[word] = index
+                    }
+                }
+            }
+        }
+        val maxIndex = word2vecKey.values.maxOrNull() ?: -1
+        val unknownIndex = maxIndex + 1
+        /*for ((word, index) in word2vecKey) {
+            Log.d("VocabMap", "$word -> $index")
+        }*/
 
         val firebaseAuth: FirebaseAuth = FirebaseAuth.getInstance() //initializes firebase authentication
         val db = Firebase.firestore
@@ -534,8 +554,8 @@ class InteractionCheckerFragment : Fragment() {
 
         //imports data and initializes
         var sexAge : String?
-        var drugList : MutableList<String>
-        var conditionList : MutableList<String>
+        var drugList = mutableListOf<String>()
+        var conditionList = mutableListOf<String>()
         db.collection("users").document(firebaseAuth.uid.toString()).get().addOnSuccessListener { documentSnapshot -> //gets data from firestore
             if(documentSnapshot.getString("Age") != null && documentSnapshot.getString("Sex") != null && documentSnapshot.getString("Age") != "" && documentSnapshot.getString("Sex") != "") { //if age and sex str isn't null or empty string
                 sexAge = documentSnapshot.getString("Sex") + ", " + documentSnapshot.getString("Age") //sets up sex and age string
@@ -555,6 +575,12 @@ class InteractionCheckerFragment : Fragment() {
             }
             interactionAdapter.resetItems(factorList, severityList)
         }
+
+        var cleanDrugList = mutableListOf<MutableList<String>>()
+        var cleanConditionList = mutableListOf<MutableList<String>>()
+
+        var indexDrugList = mutableListOf<MutableList<Int>>()
+        var indexConditionList = mutableListOf<MutableList<Int>>()
 
         //comparison button functionality
         val comparisonEntry = view.findViewById<EditText>(R.id.comparisonEntry)
@@ -577,6 +603,8 @@ class InteractionCheckerFragment : Fragment() {
                 }
             } else {
                 if (comparisonEntry.text.toString().isNotEmpty() && factorList.isNotEmpty() && factorList.contains(comparisonEntry.text.toString()) != true) {
+
+                    //rand result for severity level (temp)
                     for (i in 0 until factorList.size) { //for size of factor list
                         var riskVal = Random.nextInt(0, 3) //simulating output of MLM with random number gen of 0, 1, or 2
                         if (riskVal == 0) { //if val is 0 severity is low
@@ -586,11 +614,44 @@ class InteractionCheckerFragment : Fragment() {
                         } else { //otherwise val is 2 and severity is severe
                             severityList[i] = "Severe"
                         }
-
-                        //Preprocess Data
-
-
                     }
+
+                    //preprocess drug list for w2vec index matching
+                    for (i in 0 until drugList.size) {
+                        cleanDrugList += drugList[i]
+                            .lowercase()
+                            .replace(Regex("[^a-z0-9 -]"), "")
+                            .replace("-", " ")
+                            .split("\\s+".toRegex())
+                            .filter{it.isNotEmpty()}
+                            .toMutableList()
+                        cleanDrugList[i] = cleanDrugList[i].flatMap{ item -> abbKey[item] ?: listOf(item)}.toMutableList()
+                        Log.d("CleanList", "Index $i: ${cleanDrugList[i]}")
+                    }
+
+                    for (i in 0 until cleanDrugList.size) {
+                        indexDrugList += cleanDrugList[i].map {word -> word2vecKey[word] ?: unknownIndex }.toMutableList()
+                        Log.d("IndexList", "Index $i: ${indexDrugList[i]}")
+                    }
+
+                    //preprocess condition list for w2vec index matching
+                    for (i in 0 until conditionList.size) {
+                        cleanConditionList += conditionList[i]
+                            .lowercase()
+                            .replace(Regex("[^a-z0-9 -]"), "")
+                            .replace("-", " ")
+                            .split("\\s+".toRegex())
+                            .filter{it.isNotEmpty()}
+                            .toMutableList()
+                        cleanConditionList[i] = cleanConditionList[i].flatMap{ item -> abbKey[item] ?: listOf(item)}.toMutableList()
+                        Log.d("CleanList", "Index $i: ${cleanConditionList[i]}")
+                    }
+
+                    for (i in 0 until cleanConditionList.size) {
+                        indexConditionList += cleanConditionList[i].map {word -> word2vecKey[word] ?: unknownIndex }.toMutableList()
+                        Log.d("IndexList", "Index $i: ${indexConditionList[i]}")
+                    }
+
                     interactionAdapter.resetItems(factorList, severityList)//reset adapter
                 } else if (comparisonEntry.text.toString().isNotEmpty() != true){
                     Toast.makeText(requireContext(), "Enter comparison drug!", Toast.LENGTH_SHORT).show()//gives error
