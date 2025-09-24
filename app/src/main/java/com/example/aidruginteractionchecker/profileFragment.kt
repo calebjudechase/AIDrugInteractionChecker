@@ -48,11 +48,12 @@ class ProfileFragment : Fragment() {
 
         //spinner functionality
         val sexSpinner = view.findViewById<Spinner>(R.id.sexSpinner) //initializes spinner
-        ArrayAdapter.createFromResource(requireContext(), R.array.choose_sex,android.R.layout.simple_spinner_item).also{ //adapts string array
+        ArrayAdapter.createFromResource(requireContext(), R.array.choose_sex,R.layout.spinner_item).also{ //adapts string array
                 adapter ->
             adapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item)
             sexSpinner.adapter = adapter
         }
+
 
         db.collection("users").document(firebaseAuth.uid.toString()).get().addOnSuccessListener { documentSnapshot -> //gets data from firestore
             if(documentSnapshot.getString("Age") != null) { //if age str isn't null

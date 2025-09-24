@@ -57,6 +57,8 @@
     <string name="our_machine_learning_model_has_an_accuracy_greater_than_75_of_course_always_make_sure_to_consult_a_doctor_before_taking_a_new_potentially_harmful_medication">Our machine learning model has an accuracy greater than 75%. Of course always make sure to consult a doctor before taking a new potentially harmful medication.</string>
     <string name="for_any_other_questions_or_issues_reach_out_to_us_at">For any other questions or issues reach out to us at:</string>
     <string name="aidruginteractionchecker_gmail_com">aidruginteractionchecker@gmail.com</string>
+    <string name="biological_sex1">Biological Sex</string>
+    <string name="interaction_results1">Interaction Results</string>
     <string-array name="choose_sex">
         <item>Male</item>
         <item>Female</item>

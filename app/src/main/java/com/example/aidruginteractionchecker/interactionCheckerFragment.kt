@@ -629,6 +629,7 @@ class InteractionCheckerFragment : Fragment() {
                         Log.d("CleanList", "Index $i: ${cleanDrugList[i]}")
                     }
 
+                    //w2vec index matching
                     for (i in 0 until cleanDrugList.size) {
                         indexDrugList += cleanDrugList[i].map {word -> word2vecKey[word] ?: unknownIndex }.toMutableList()
                         Log.d("IndexList", "Index $i: ${indexDrugList[i]}")
@@ -647,6 +648,7 @@ class InteractionCheckerFragment : Fragment() {
                         Log.d("CleanList", "Index $i: ${cleanConditionList[i]}")
                     }
 
+                    //w2vec index matching
                     for (i in 0 until cleanConditionList.size) {
                         indexConditionList += cleanConditionList[i].map {word -> word2vecKey[word] ?: unknownIndex }.toMutableList()
                         Log.d("IndexList", "Index $i: ${indexConditionList[i]}")
