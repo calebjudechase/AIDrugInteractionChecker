@@ -21,6 +21,8 @@ import com.google.firebase.ml.modeldownloader.CustomModelDownloadConditions
 import com.google.firebase.ml.modeldownloader.DownloadType
 import com.google.firebase.ml.modeldownloader.FirebaseModelDownloader
 import org.tensorflow.lite.Interpreter
+import java.io.DataInputStream
+import java.io.EOFException
 import kotlin.random.Random
 
 class InteractionCheckerFragment : Fragment() {
@@ -47,11 +49,11 @@ class InteractionCheckerFragment : Fragment() {
             CustomModelDownloadConditions.Builder().requireWifi().build()
         ).addOnSuccessListener {
             //Toast.makeText(requireContext(), "ML Model Successfully Downloaded!", Toast.LENGTH_SHORT).show()
-            //model: CustomModel? ->
-            //val modelFile = model?.file
-            //if (modelFile != null) {
-            //    interpreter = Interpreter(modelFile) //not sure if this works come back to this l8r
-            //}
+//            model: CustomModel? ->
+//            val modelFile = model?.file
+//            if (modelFile != null) {
+//                interpreter = Interpreter(modelFile) //not sure if this works come back to this l8r
+//            }
         }
 
         var interactionAdapter : DrugInteractionRecyclerItemAdapter
@@ -520,25 +522,11 @@ class InteractionCheckerFragment : Fragment() {
             "zttk" to listOf("zhu", "tokita", "takenouchi", "kim")
             ) //medical abbreviation key
 
-        //creates the word2vec key from the index file provided to me
-        var word2vecKey = mutableMapOf<String, Int>()
-        context?.assets?.open("vocabulary_with_index.txt")?.bufferedReader()?.useLines { lines ->
-            lines.forEach { line ->
-                val parts = line.trim().split(Regex("\\s+")) // split on tabs or spaces
-                if (parts.size == 2) {
-                    val word = parts[0]
-                    val index = parts[1].toIntOrNull()
-                    if (index != null) {
-                        word2vecKey[word] = index
-                    }
-                }
-            }
-        }
+        val word2vecKey = (requireActivity().application as MyApp).word2vecKey //gets word2vecKey from myapp
         val maxIndex = word2vecKey.values.maxOrNull() ?: -1
         val unknownIndex = maxIndex + 1
-        /*for ((word, index) in word2vecKey) {
-            Log.d("VocabMap", "$word -> $index")
-        }*/
+
+        val word2vecEmbeddings = (requireActivity().application as MyApp).word2vecEmbeddings //gets word2vecEmbeddings from myapp
 
         val firebaseAuth: FirebaseAuth = FirebaseAuth.getInstance() //initializes firebase authentication
         val db = Firebase.firestore
