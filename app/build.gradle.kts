@@ -69,7 +69,7 @@ dependencies {
     implementation("com.google.mlkit:barcode-scanning:17.3.0")
 
     implementation("com.google.firebase:firebase-ml-modeldownloader")
-    implementation("org.tensorflow:tensorflow-lite:2.3.0")
+    implementation("org.tensorflow:tensorflow-lite:2.6.0")
 
     implementation ("com.google.android.material:material:<latest-version>")
 }

@@ -10,19 +10,11 @@ import android.widget.Button
 import android.widget.EditText
 import android.widget.ImageButton
 import android.widget.Toast
-import androidx.camera.core.processing.SurfaceProcessorNode
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import com.google.firebase.Firebase
 import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.firestore.firestore
-import com.google.firebase.ml.modeldownloader.CustomModel
-import com.google.firebase.ml.modeldownloader.CustomModelDownloadConditions
-import com.google.firebase.ml.modeldownloader.DownloadType
-import com.google.firebase.ml.modeldownloader.FirebaseModelDownloader
-import org.tensorflow.lite.Interpreter
-import java.io.DataInputStream
-import java.io.EOFException
 import kotlin.random.Random
 
 class InteractionCheckerFragment : Fragment() {
@@ -41,24 +33,12 @@ class InteractionCheckerFragment : Fragment() {
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) { //third event
 
-        //var interpreter: Interpreter
-
-        FirebaseModelDownloader.getInstance().getModel(
-            "Drug_Interaction_Model",
-            DownloadType.LOCAL_MODEL_UPDATE_IN_BACKGROUND,
-            CustomModelDownloadConditions.Builder().requireWifi().build()
-        ).addOnSuccessListener {
-            //Toast.makeText(requireContext(), "ML Model Successfully Downloaded!", Toast.LENGTH_SHORT).show()
-//            model: CustomModel? ->
-//            val modelFile = model?.file
-//            if (modelFile != null) {
-//                interpreter = Interpreter(modelFile) //not sure if this works come back to this l8r
-//            }
-        }
-
         var interactionAdapter : DrugInteractionRecyclerItemAdapter
         var factorList = mutableListOf<String>()
         var severityList = mutableListOf<String>()
+        var sideEffectList = mutableListOf<MutableList<String>>()
+        var frequencyList = mutableListOf<MutableList<String>>()
+        var interactionTypeList = mutableListOf<Int>()
 
         val abbKey = mapOf(
             "aaa" to listOf("abdominal", "aortic", "aneurysm"),
@@ -522,11 +502,12 @@ class InteractionCheckerFragment : Fragment() {
             "zttk" to listOf("zhu", "tokita", "takenouchi", "kim")
             ) //medical abbreviation key
 
-        val word2vecKey = (requireActivity().application as MyApp).word2vecKey //gets word2vecKey from myapp
-        val maxIndex = word2vecKey.values.maxOrNull() ?: -1
-        val unknownIndex = maxIndex + 1
+        val interpreter = (requireActivity().application as MyApp).interpreter //gets interpreter
 
-        val word2vecEmbeddings = (requireActivity().application as MyApp).word2vecEmbeddings //gets word2vecEmbeddings from myapp
+        val word2vecKey = (requireActivity().application as MyApp).word2vecKey //gets word2vecKey from myapp
+        val unknownIndex = 1
+
+        val sideEffectsKey = (requireActivity().application as MyApp).sideEffectMap //gets sideEffectsKey from myapp
 
         val firebaseAuth: FirebaseAuth = FirebaseAuth.getInstance() //initializes firebase authentication
         val db = Firebase.firestore
@@ -535,40 +516,55 @@ class InteractionCheckerFragment : Fragment() {
 
         //sets up results recycler
         val interactionRecycler = view.findViewById<RecyclerView>(R.id.resultsRecycler)
-        interactionAdapter = DrugInteractionRecyclerItemAdapter(factorList, severityList)
+        interactionAdapter = DrugInteractionRecyclerItemAdapter(factorList, severityList, sideEffectList, interactionTypeList, frequencyList)
         interactionRecycler.layoutManager = LinearLayoutManager(context)
         interactionRecycler.adapter = interactionAdapter
         interactionRecycler.recycledViewPool.setMaxRecycledViews(0, 0)
 
         //imports data and initializes
-        var sexAge : String?
+        var sexAge = ""
         var drugList = mutableListOf<String>()
         var conditionList = mutableListOf<String>()
         db.collection("users").document(firebaseAuth.uid.toString()).get().addOnSuccessListener { documentSnapshot -> //gets data from firestore
             if(documentSnapshot.getString("Age") != null && documentSnapshot.getString("Sex") != null && documentSnapshot.getString("Age") != "" && documentSnapshot.getString("Sex") != "") { //if age and sex str isn't null or empty string
                 sexAge = documentSnapshot.getString("Sex") + ", " + documentSnapshot.getString("Age") //sets up sex and age string
                 factorList += sexAge //adds string to list
+                interactionTypeList += 0
             }
             if(documentSnapshot.getString("Meds") != null && documentSnapshot.getString("Meds") != "") { //if meds string isn't null or empty
                 drugList = documentSnapshot.getString("Meds").toString().split("~").toMutableList() //splits string into list
                 factorList += drugList //adds the drug list to the factor list
+                for (j in 0 until drugList.size) {
+                    interactionTypeList += 1
+                }
             }
             if(documentSnapshot.getString("Conditions") != null && documentSnapshot.getString("Conditions") != "") { //same as above
                 conditionList = documentSnapshot.getString("Conditions").toString().split("~").toMutableList()
                 factorList += conditionList //adds the condition list to the factor list
+                for (j in 0 until conditionList.size) {
+                    interactionTypeList += 0
+                }
             }
             print(factorList)
             for (i in 0 until factorList.size) { //makes an empty entry for severity list for every item in factor list
                 severityList += ""
+                sideEffectList += listOf("", "", "").toMutableList()
+                frequencyList += listOf("", "", "").toMutableList()
             }
-            interactionAdapter.resetItems(factorList, severityList)
+            interactionAdapter.resetItems(factorList, severityList, sideEffectList, interactionTypeList, frequencyList)
         }
 
-        var cleanDrugList = mutableListOf<MutableList<String>>()
-        var cleanConditionList = mutableListOf<MutableList<String>>()
+        var cleanComparisonEntry: String
+        var indexComparisonEntry: Int
 
-        var indexDrugList = mutableListOf<MutableList<Int>>()
-        var indexConditionList = mutableListOf<MutableList<Int>>()
+        var cleanSexAge: String = String.toString()
+        var indexSexAge: Int
+
+        var cleanDrugList = mutableListOf<String>()
+        var cleanConditionList = mutableListOf<String>()
+
+        var indexDrugList = mutableListOf<Int>()
+        var indexConditionList = mutableListOf<Int>()
 
         //comparison button functionality
         val comparisonEntry = view.findViewById<EditText>(R.id.comparisonEntry)
@@ -592,34 +588,31 @@ class InteractionCheckerFragment : Fragment() {
             } else {
                 if (comparisonEntry.text.toString().isNotEmpty() && factorList.isNotEmpty() && factorList.contains(comparisonEntry.text.toString()) != true) {
 
-                    //rand result for severity level (temp)
-                    for (i in 0 until factorList.size) { //for size of factor list
-                        var riskVal = Random.nextInt(0, 3) //simulating output of MLM with random number gen of 0, 1, or 2
-                        if (riskVal == 0) { //if val is 0 severity is low
-                            severityList[i] = "Low"
-                        } else if (riskVal == 1) { //if val is 1 severity is moderate
-                            severityList[i] = "Moderate"
-                        } else { //otherwise val is 2 and severity is severe
-                            severityList[i] = "Severe"
-                        }
-                    }
+                    cleanComparisonEntry = comparisonEntry.text.toString()
+                        .lowercase()
+                        .replace(Regex("[^a-z]"), "")
+                        .replace(" ", "_")
 
-                    //preprocess drug list for w2vec index matching
+                    indexComparisonEntry = word2vecKey[cleanComparisonEntry] ?: unknownIndex
+
+                    cleanSexAge = sexAge
+                        .lowercase()
+                        .replace(Regex("[^a-z0-9 ,]"), "")
+
+                    indexSexAge = word2vecKey[cleanSexAge] ?: unknownIndex
+
+                    //preprocess drug list for index matching
                     for (i in 0 until drugList.size) {
                         cleanDrugList += drugList[i]
                             .lowercase()
-                            .replace(Regex("[^a-z0-9 -]"), "")
-                            .replace("-", " ")
-                            .split("\\s+".toRegex())
-                            .filter{it.isNotEmpty()}
-                            .toMutableList()
-                        cleanDrugList[i] = cleanDrugList[i].flatMap{ item -> abbKey[item] ?: listOf(item)}.toMutableList()
+                            .replace(Regex("[^a-z]"), "")
+                            .replace(" ", "_")
                         Log.d("CleanList", "Index $i: ${cleanDrugList[i]}")
                     }
 
                     //w2vec index matching
                     for (i in 0 until cleanDrugList.size) {
-                        indexDrugList += cleanDrugList[i].map {word -> word2vecKey[word] ?: unknownIndex }.toMutableList()
+                        indexDrugList += word2vecKey[cleanDrugList[i]] ?: unknownIndex
                         Log.d("IndexList", "Index $i: ${indexDrugList[i]}")
                     }
 
@@ -627,22 +620,93 @@ class InteractionCheckerFragment : Fragment() {
                     for (i in 0 until conditionList.size) {
                         cleanConditionList += conditionList[i]
                             .lowercase()
-                            .replace(Regex("[^a-z0-9 -]"), "")
-                            .replace("-", " ")
-                            .split("\\s+".toRegex())
-                            .filter{it.isNotEmpty()}
-                            .toMutableList()
-                        cleanConditionList[i] = cleanConditionList[i].flatMap{ item -> abbKey[item] ?: listOf(item)}.toMutableList()
+                            .replace(Regex("[^a-z0-9]"), "")
+                            .replace(" ", "_")
                         Log.d("CleanList", "Index $i: ${cleanConditionList[i]}")
                     }
 
                     //w2vec index matching
                     for (i in 0 until cleanConditionList.size) {
-                        indexConditionList += cleanConditionList[i].map {word -> word2vecKey[word] ?: unknownIndex }.toMutableList()
+                        indexConditionList += word2vecKey[cleanConditionList[i]] ?: unknownIndex
                         Log.d("IndexList", "Index $i: ${indexConditionList[i]}")
                     }
 
-                    interactionAdapter.resetItems(factorList, severityList)//reset adapter
+                    var input0 = intArrayOf(indexComparisonEntry)
+                    var input1 = intArrayOf(1)
+
+                    for (i in 0 until factorList.size ) {
+
+                        input1 = if (i < 1) {
+                            intArrayOf(indexSexAge)
+                        } else if (i < (1 + drugList.size)) {
+                            intArrayOf(indexDrugList[i-1])
+                        } else {
+                            intArrayOf(indexConditionList[i-(1+drugList.size)])
+                        }
+
+                        val inputs = arrayOf<Any>(input0, input1)
+
+                        val out0Buf = Array(1) { FloatArray(691) }
+                        val out1Buf = Array(1) { FloatArray(3) }
+                        val out2Buf = Array(1) { Array(691) { FloatArray(5) } }
+
+                        val outputs = hashMapOf<Int, Any>(
+                            0 to out0Buf,
+                            1 to out1Buf,
+                            2 to out2Buf
+                        )
+
+                        interpreter.allocateTensors()
+                        interpreter.runForMultipleInputsOutputs(inputs, outputs)
+
+                        val probs3 = out1Buf[0]
+                        Log.d("probs3max", "probs3max = ${(probs3.indices.maxByOrNull { probs3[it] } ?: 0)}")
+                        if ((probs3.indices.maxByOrNull { probs3[it] } ?: 0) == 0) { //if val is 0 severity is low
+                            severityList[i] = "Low"
+                        } else if ((probs3.indices.maxByOrNull { probs3[it] } ?: 0) == 1) { //if val is 1 severity is moderate
+                            severityList[i] = "Moderate"
+                        } else { //otherwise val is 2 and severity is severe
+                            severityList[i] = "Severe"
+                        }
+
+                        val logits691 = out0Buf[0]
+                        val boxes691x5 = Array(691) { i -> out2Buf[0][i] }
+
+                        if (interactionTypeList[i] == 1) {
+                            val top3Indexes = logits691
+                                .withIndex()
+                                .sortedByDescending { it.value }
+                                .take(3)
+                                .map{it.index}
+                            for (j in 0 until 3) {
+                                sideEffectList[i][j] = sideEffectsKey.filterValues { it == top3Indexes[j] }.toString()
+                                    .replace(Regex("[0-9={}]"), "")
+                                    .replace("_", " ")
+
+                                val frequencyIndex = boxes691x5[top3Indexes[j]].indices.maxByOrNull{boxes691x5[top3Indexes[j]][it]}
+                                frequencyList[i][j] = if (frequencyIndex == 0) {
+                                    "very rare"
+                                } else if (frequencyIndex == 1) {
+                                    "rare"
+                                } else if (frequencyIndex == 2) {
+                                    "uncommon"
+                                } else if (frequencyIndex == 3){
+                                    "common"
+                                } else {
+                                    "very common"
+                                }
+                            }
+                        }
+
+
+                        Log.d("TFLite", "probs3 = ${probs3.joinToString(limit = 3, truncated = "...")}")
+                        Log.d("TFLite", "logits691[0..4] = ${logits691.take(5)}")
+                        Log.d("TFLite", "boxes[0] = ${boxes691x5[1].joinToString()}")
+
+                    }
+
+                    interactionAdapter.resetItems(factorList, severityList, sideEffectList, interactionTypeList, frequencyList)//reset adapter
+
                 } else if (comparisonEntry.text.toString().isNotEmpty() != true){
                     Toast.makeText(requireContext(), "Enter comparison drug!", Toast.LENGTH_SHORT).show()//gives error
                 } else if (factorList.isNotEmpty() != true) {

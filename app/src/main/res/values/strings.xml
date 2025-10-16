@@ -59,6 +59,8 @@
     <string name="aidruginteractionchecker_gmail_com">aidruginteractionchecker@gmail.com</string>
     <string name="biological_sex1">Biological Sex</string>
     <string name="interaction_results1">Interaction Results</string>
+    <string name="common_side_effects">Common side effects</string>
+    <string name="common_side_effects_and_their_frequency">Common Side Effects and Their Frequency</string>
     <string-array name="choose_sex">
         <item>Male</item>
         <item>Female</item>

@@ -12,40 +12,88 @@
     app:strokeColor="@color/outline_grey"
     app:strokeWidth="1dp">
 
-    <androidx.constraintlayout.widget.ConstraintLayout
+    <!-- Make the root inside the card vertical so we can put
+         the header row on top and the expandable block below -->
+    <LinearLayout
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
+        android:orientation="vertical"
         android:padding="12dp">
 
-        <!-- Interaction name -->
-        <TextView
-            android:id="@+id/interactionRecyclerText"
-            android:layout_width="0dp"
-            android:layout_height="wrap_content"
-            android:text="@string/sample_text"
-            android:textSize="18sp"
-            android:textColor="@color/input_text_color"
-            android:ellipsize="end"
-            android:singleLine="true"
-            app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toTopOf="parent"
-            app:layout_constraintBottom_toBottomOf="parent"
-            app:layout_constraintEnd_toStartOf="@+id/severityText"
-            app:layout_constraintHorizontal_bias="0" />
+        <!-- Header row: factor (left) + severity (right) -->
+        <androidx.constraintlayout.widget.ConstraintLayout
+            android:id="@+id/headerRow"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content">
 
-        <!-- Severity label -->
-        <TextView
-            android:id="@+id/severityText"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:text="@string/sample_text"
-            android:textSize="18sp"
-            android:gravity="end"
-            android:ellipsize="end"
-            android:singleLine="true"
-            app:layout_constraintTop_toTopOf="parent"
-            app:layout_constraintBottom_toBottomOf="parent"
-            app:layout_constraintEnd_toEndOf="parent" />
+            <TextView
+                android:id="@+id/interactionRecyclerText"
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:text="@string/sample_text"
+                android:textSize="18sp"
+                android:textColor="@color/input_text_color"
+                android:ellipsize="end"
+                android:singleLine="true"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintTop_toTopOf="parent"
+                app:layout_constraintBottom_toBottomOf="parent"
+                app:layout_constraintEnd_toStartOf="@+id/severityText"
+                app:layout_constraintHorizontal_bias="0" />
 
-    </androidx.constraintlayout.widget.ConstraintLayout>
+            <TextView
+                android:id="@+id/severityText"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="@string/sample_text"
+                android:textSize="18sp"
+                android:gravity="end"
+                android:ellipsize="end"
+                android:singleLine="true"
+                app:layout_constraintTop_toTopOf="parent"
+                app:layout_constraintBottom_toBottomOf="parent"
+                app:layout_constraintEnd_toEndOf="parent" />
+        </androidx.constraintlayout.widget.ConstraintLayout>
+
+        <!-- Expandable section: only shown for DRUG_TO_DRUG and when expanded -->
+        <LinearLayout
+            android:id="@+id/sideEffectsLayout"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="vertical"
+            android:paddingTop="8dp"
+            android:visibility="gone">
+
+            <TextView
+                android:id="@+id/sideEffectsTitle"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="@string/common_side_effects_and_their_frequency"
+                android:textStyle="bold"
+                android:textSize="14sp"
+                android:paddingBottom="4dp"
+                android:textColor="@color/input_text_color"/>
+
+            <TextView
+                android:id="@+id/tvSideEffect1"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:text=""
+                android:textColor="@color/input_text_color"/>
+
+            <TextView
+                android:id="@+id/tvSideEffect2"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:text=""
+                android:textColor="@color/input_text_color"/>
+
+            <TextView
+                android:id="@+id/tvSideEffect3"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:text=""
+                android:textColor="@color/input_text_color"/>
+        </LinearLayout>
+    </LinearLayout>
 </com.google.android.material.card.MaterialCardView>
